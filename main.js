@@ -1,8 +1,18 @@
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { OrbitControls } from "./node_modules/three/build/OrbitControls.js";
+import Stats from "./node_modules/stats.js/src/Stats.js";
+import * as dat from './node_modules/lil-gui/dist/lil-gui.esm.js';
 
 //////SCENE
 const scene = new THREE.Scene();
+
+
+const stats = new Stats();
+stats.showPanel(0)
+document.body.appendChild(stats.dom)
+
+const gui = new dat.GUI()
+
 
 const sizes = {
     width: window.innerWidth,
@@ -32,6 +42,9 @@ const aLight = new THREE.AmbientLight(0x404040, 1.2);
 scene.add(aLight);
 
 
+const parameters = {
+    color: 0xff000,
+}
 ////// Group
 const group = new THREE.Group();
 
@@ -41,42 +54,39 @@ const material = new THREE.MeshPhongMaterial({
     wireframe: true, // Прозрачна фигура
 });
 
-let index = 0; 
-let activeIndex = -1;
+const mesh = new THREE.Mesh(geometry,material)
 
-for (let x = -5; x <= 5; x += 5) {
-    for (let y = -5; y <= 5; y += 5) {
-        const cube = new THREE.Mesh(geometry, material.clone());
-        cube.position.set(x, y, 0)
+scene.add(mesh)
 
-        cube.index = index
-
-        group.add(cube)
-
-        index += 1;
-    }
-}
-
-scene.add(group)
 ////// OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
 
+const scaleFolder = gui.addFolder('Scale'); // створюємо папку 
 
+scaleFolder.add(mesh.scale, 'x').min(0).max(5).step(0.1).name('box scale x');
+scaleFolder.add(mesh.scale, 'y').min(0).max(5).step(0.1).name('box scale y');
+scaleFolder.add(mesh.scale, 'z').min(0).max(5).step(0.1).name('box scale z');
+
+gui.add(mesh, 'visible');
+gui.add(material, 'wireframe');
+
+//колір не міняє без сет  
+gui.addColor(parameters, 'color').onChange(()=> material.color.set(parameters.color))
 
 ////// ANIME
 const clock = new THREE.Clock();
 
 function animate() {
+    stats.begin()
 
     const delta = clock.getDelta();
 
-    if(activeIndex !== -1){
-        group.children[activeIndex].rotation.y += delta * 0.5;
-    }
 
     controls.update();
-    requestAnimationFrame(animate); // Запрашиваем следующий кадр анимации
+
     renderer.render(scene, camera); // Рендерим сцену
+    stats.end();
+    requestAnimationFrame(animate); // Запрашиваем следующий кадр анимации
 }
 
 animate();
@@ -88,7 +98,7 @@ const pointer = new THREE.Vector2();
 
 
 
-const resetActive = ()=>{
+const resetActive = () => {
     group.children[activeIndex].material.color.set('gray');
     activeIndex = -1;
 }
@@ -101,7 +111,7 @@ function onPointerMove(event) {
 
     const intersects = raycaster.intersectObjects(group.children)
 
-    if (activeIndex !== -1){
+    if (activeIndex !== -1) {
         resetActive()
     }
 
@@ -109,7 +119,7 @@ function onPointerMove(event) {
 
         intersects[i].object.material.color.set(0xff0000); // Устанавливаем красный цвет для объекта, на который нажали
 
-        activeIndex = intersects[i]. object.index;
+        activeIndex = intersects[i].object.index;
     }
 }
 
