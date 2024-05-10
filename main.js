@@ -1,8 +1,10 @@
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { OrbitControls } from "./node_modules/three/build/OrbitControls.js";
+import { GLTFLoader } from "./node_modules/three/build/GLTFLoader.js";
 import Stats from "./node_modules/stats.js/src/Stats.js";
 import * as dat from './node_modules/lil-gui/dist/lil-gui.esm.js';
 
+console.log(GLTFLoader);
 //////SCENE
 const scene = new THREE.Scene();
 
@@ -54,9 +56,30 @@ const material = new THREE.MeshPhongMaterial({
     wireframe: true, // Прозрачна фигура
 });
 
-const mesh = new THREE.Mesh(geometry,material)
+const mesh = new THREE.Mesh(geometry, material)
 
 scene.add(mesh)
+
+////// GTLF MODEL
+const loader = new GLTFLoader();
+
+loader.load(
+    './model/avocado.gltf',
+    (gltf) => {
+        console.log('success');
+        console.log(gltf);
+        scene.add(gltf.scene.children[0])
+    },
+    (progress) => {
+        console.log('progress');
+        console.log(progress);
+    },
+    (error) => {
+        console.log('error');
+        console.log(error);
+    }
+)
+
 
 ////// OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -71,7 +94,7 @@ gui.add(mesh, 'visible');
 gui.add(material, 'wireframe');
 
 //колір не міняє без сет  
-gui.addColor(parameters, 'color').onChange(()=> material.color.set(parameters.color))
+gui.addColor(parameters, 'color').onChange(() => material.color.set(parameters.color))
 
 ////// ANIME
 const clock = new THREE.Clock();
@@ -90,69 +113,3 @@ function animate() {
 }
 
 animate();
-
-////// HANLERCLICK
-
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-
-
-
-const resetActive = () => {
-    group.children[activeIndex].material.color.set('gray');
-    activeIndex = -1;
-}
-function onPointerMove(event) {
-
-    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-    pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(pointer, camera)
-
-    const intersects = raycaster.intersectObjects(group.children)
-
-    if (activeIndex !== -1) {
-        resetActive()
-    }
-
-    for (let i = 0; i < intersects.length; i++) {
-
-        intersects[i].object.material.color.set(0xff0000); // Устанавливаем красный цвет для объекта, на который нажали
-
-        activeIndex = intersects[i].object.index;
-    }
-}
-
-
-
-window.addEventListener('click', onPointerMove)
-
-
-////// RESIZE
-
-
-
-window.addEventListener('resize', () => {
-
-
-    sizes.width = window.innerWidth;
-
-    sizes.height = window.innerHeight;
-
-
-
-
-    camera.aspect = sizes.width / sizes.height;
-
-    camera.updateProjectionMatrix();
-
-
-
-
-    renderer.setSize(sizes.width, sizes.height);
-
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    renderer.render(scene, camera);
-
-});
