@@ -4,7 +4,6 @@ import { GLTFLoader } from "./node_modules/three/build/GLTFLoader.js";
 import Stats from "./node_modules/stats.js/src/Stats.js";
 import * as dat from './node_modules/lil-gui/dist/lil-gui.esm.js';
 
-console.log(GLTFLoader);
 //////SCENE
 const scene = new THREE.Scene();
 
@@ -63,20 +62,26 @@ scene.add(mesh)
 ////// GTLF MODEL
 const loader = new GLTFLoader();
 
+let mixer = null;
+
 loader.load(
-    './model/avocado.gltf',
+    './BrainStem/glTF/BrainStem.gltf',
     (gltf) => {
         console.log('success');
-        console.log(gltf);
-        scene.add(gltf.scene.children[0])
+        gltf.scene.children[0].scale.set(5, 5, 5);
+
+        mixer = new THREE.AnimationMixer(gltf.scene);
+
+        const action = mixer.clipAction(gltf.animations[0])
+        action.play();
+
+        scene.add(gltf.scenes[0])
     },
     (progress) => {
         console.log('progress');
-        console.log(progress);
     },
     (error) => {
         console.log('error');
-        console.log(error);
     }
 )
 
@@ -103,10 +108,12 @@ function animate() {
     stats.begin()
 
     const delta = clock.getDelta();
-
-
+    if (mixer) {
+        mixer.update(delta)
+    }
+    
     controls.update();
-
+    
     renderer.render(scene, camera); // Рендерим сцену
     stats.end();
     requestAnimationFrame(animate); // Запрашиваем следующий кадр анимации
