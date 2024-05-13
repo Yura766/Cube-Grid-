@@ -1,0 +1,11 @@
+Model Information:
+* title:	Headphones AirPods Pro
+* source:	https://sketchfab.com/3d-models/headphones-airpods-pro-a6f024575e904a31b44b25a29d52e718
+* author:	Valentine_crut (https://sketchfab.com/Valentine_crut)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Headphones AirPods Pro" (https://sketchfab.com/3d-models/headphones-airpods-pro-a6f024575e904a31b44b25a29d52e718) by Valentine_crut (https://sketchfab.com/Valentine_crut) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

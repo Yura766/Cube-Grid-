@@ -65,16 +65,24 @@ const loader = new GLTFLoader();
 let mixer = null;
 
 loader.load(
-    './BrainStem/glTF/BrainStem.gltf',
+    './models/BrainStem/glTF/BrainStem.gltf',
+    // '../models/Avocado/Avocado.gltf',
+    // '../Headphones/Avocado/scene.gltf',
+
+
     (gltf) => {
         console.log('success');
+
+        // ANIMATION
+        // mixer = new THREE.AnimationMixer(gltf.scene);
+        // const action = mixer.clipAction(gltf.animations[0])
+        // action.play();
+
+
+        // size
         gltf.scene.children[0].scale.set(5, 5, 5);
 
-        mixer = new THREE.AnimationMixer(gltf.scene);
-
-        const action = mixer.clipAction(gltf.animations[0])
-        action.play();
-
+        // add to canvas 
         scene.add(gltf.scenes[0])
     },
     (progress) => {
@@ -111,9 +119,9 @@ function animate() {
     if (mixer) {
         mixer.update(delta)
     }
-    
+
     controls.update();
-    
+
     renderer.render(scene, camera); // Рендерим сцену
     stats.end();
     requestAnimationFrame(animate); // Запрашиваем следующий кадр анимации
